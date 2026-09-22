@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}批量登记 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>批量登记</h1>
+<p>一张表连续填写多座灯的灯号、亮度和偏角，一次提交后逐座判定并分别入库；整批成功后签发一张批次票。</p>
+<form class="card" method="post" style="max-width:760px">
+  {% csrf_token %}
+  <label>本批要求光强（坎德拉，各座共用）</label>
+  <input name="required_cd" type="number" step="0.1" value="{{ default_required }}" style="max-width:220px" />
+  <table style="margin-top:14px">
+    <thead>
+      <tr><th style="width:48px">行</th><th>灯号</th><th>实测亮度</th><th>偏角（度）</th></tr>
+    </thead>
+    <tbody>
+    {% for i in slots %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td><input name="aid_code" style="min-width:160px" /></td>
+        <td><input name="measured_cd" type="number" step="0.1" /></td>
+        <td><input name="bearing_error_deg" type="number" step="0.1" /></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <button type="submit">整批提交</button>
+</form>
+{% endblock %}

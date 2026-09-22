@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}批次票 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>批次票</h1>
+<form method="get" class="card" style="max-width:520px">
+  <label>按票号回看本批</label>
+  <div style="display:flex;gap:8px">
+    <input name="ticket_no" value="{{ q }}" placeholder="如 B00000001" />
+    <button type="submit">查票</button>
+  </div>
+</form>
+
+{% if lookup_error %}<p class="err">{{ lookup_error }}</p>{% endif %}
+{% if matched %}
+<h2>票号 {{ matched.ticket_no }} 的本批结论</h2>
+<p>整批成功 · 共 {{ matched.light_count }} 座 · 登记人 {{ matched.created_by }} · {{ matched.created_at|date:"Y-m-d H:i" }}</p>
+<table>
+  <thead><tr><th>行</th><th>灯号</th><th>实测亮度</th><th>要求光强</th><th>偏角（度）</th><th>结论</th><th>说明</th></tr></thead>
+  <tbody>
+  {% for row in matched_rows %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ row.aid_code }}</td>
+      <td>{{ row.measured_cd }}</td>
+      <td>{{ row.required_cd }}</td>
+      <td>{{ row.bearing_error_deg }}</td>
+      <td class="{% if row.verdict == '合格' %}ok{% else %}bad{% endif %}">{{ row.verdict }}</td>
+      <td>{{ row.note }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p><a href="{% url 'batch_detail' matched.pk %}">打开批次票页</a></p>
+{% endif %}
+
+<h2>已成功的批次票</h2>
+<table>
+  <thead><tr><th>票号</th><th>灯座数</th><th>登记人</th><th>时间</th><th></th></tr></thead>
+  <tbody>
+  {% for t in tickets %}
+    <tr>
+      <td>{{ t.ticket_no }}</td>
+      <td>{{ t.light_count }}</td>
+      <td>{{ t.created_by }}</td>
+      <td>{{ t.created_at|date:"Y-m-d H:i" }}</td>
+      <td><a href="{% url 'batch_detail' t.pk %}">回看</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">还没有成功批次</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

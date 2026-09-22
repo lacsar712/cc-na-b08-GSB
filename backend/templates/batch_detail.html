@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}批次票 {{ ticket.ticket_no }} · 航标灯光巡检台{% endblock %}
+{% block body %}
+{% if ticket.status == 'success' %}
+  <h1>批次票 {{ ticket.ticket_no }}</h1>
+  <p>整批成功 · 共 {{ ticket.light_count }} 座 · 登记人 {{ ticket.created_by }} · {{ ticket.created_at|date:"Y-m-d H:i" }}</p>
+  <p>本批新行主键：<code>{{ ticket.row_ids }}</code></p>
+  <table>
+    <thead><tr><th>行</th><th>灯号</th><th>实测亮度</th><th>要求光强</th><th>偏角（度）</th><th>结论</th><th>说明</th><th></th></tr></thead>
+    <tbody>
+    {% for row in rows %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ row.aid_code }}</td>
+        <td>{{ row.measured_cd }}</td>
+        <td>{{ row.required_cd }}</td>
+        <td>{{ row.bearing_error_deg }}</td>
+        <td class="{% if row.verdict == '合格' %}ok{% else %}bad{% endif %}">{{ row.verdict }}</td>
+        <td>{{ row.note }}</td>
+        <td><a href="{% url 'detail' row.pk %}">详情</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <h1 class="bad">失败批次尝试 {{ ticket.ticket_no }}</h1>
+  <p>整批未入库，总表没有新增任何实测行。</p>
+  <p>提交 {{ ticket.light_count }} 行 · 登记人 {{ ticket.created_by }} · {{ ticket.created_at|date:"Y-m-d H:i" }}</p>
+  <p class="err">{{ ticket.reason }}</p>
+{% endif %}
+<p><a href="{% url 'batch_list' %}">返回批次票</a></p>
+{% endblock %}

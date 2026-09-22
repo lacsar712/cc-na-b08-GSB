@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}失败批次尝试 · 航标灯光巡检台{% endblock %}
+{% block body %}
+<h1>失败批次尝试</h1>
+<p>以下批次因校验未通过而整批未入库，总表无新增实测行。</p>
+<table>
+  <thead><tr><th>尝试票号</th><th>提交行数</th><th>失败行</th><th>原因</th><th>登记人</th><th>时间</th><th></th></tr></thead>
+  <tbody>
+  {% for t in attempts %}
+    <tr>
+      <td>{{ t.ticket_no }}</td>
+      <td>{{ t.light_count }}</td>
+      <td>{% if t.failed_row %}第 {{ t.failed_row }} 行{% else %}—{% endif %}</td>
+      <td class="bad">{{ t.reason }}</td>
+      <td>{{ t.created_by }}</td>
+      <td>{{ t.created_at|date:"Y-m-d H:i" }}</td>
+      <td><a href="{% url 'batch_detail' t.pk %}">查看</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="7">还没有失败尝试</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
