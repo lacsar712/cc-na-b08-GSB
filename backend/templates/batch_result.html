@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body %}
+{% if failed %}
+<h1>批量提交失败</h1>
+<p class="err">第 {{ line_no }} 行{{ reason }}，整批未入库，未生成批次票。</p>
+<p>本次提交 {{ attempt.submitted_rows }} 行，已登记为一条失败批次尝试（无新实测行）。</p>
+<p><a href="{% url 'batch_create' %}">返回批量登记表</a> · <a href="{% url 'failed_attempts' %}">查看失败尝试</a></p>
+{% else %}
+<h1>批量登记完成</h1>
+<p>批次票号：<strong><a href="{% url 'ticket' attempt.ticket %}">{{ attempt.ticket }}</a></strong></p>
+<table>
+  <thead><tr><th>行号</th><th>灯号</th><th>实测光强</th><th>要求光强</th><th>偏角（度）</th><th>结论</th><th>说明</th><th></th></tr></thead>
+  <tbody>
+  {% for line in lines %}
+    <tr>
+      <td>{{ line.line_no }}</td>
+      <td>{{ line.row.aid_code }}</td>
+      <td>{{ line.row.measured_cd }}</td>
+      <td>{{ line.row.required_cd }}</td>
+      <td>{{ line.row.bearing_error_deg }}</td>
+      <td class="{% if line.row.verdict == '合格' %}ok{% else %}bad{% endif %}">{{ line.row.verdict }}</td>
+      <td>{{ line.row.note }}</td>
+      <td><a href="{% url 'detail' line.row.pk %}">详情</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p><a href="{% url 'batch_create' %}">再登记一批</a> · <a href="{% url 'tickets' %}">批次票列表</a></p>
+{% endif %}
+{% endblock %}

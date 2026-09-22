@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>已成功批次票</h1>
+<table>
+  <thead><tr><th>票号</th><th>提交人</th><th>时间</th><th>座数</th><th>新行主键</th><th></th></tr></thead>
+  <tbody>
+  {% for attempt in attempts %}
+    <tr>
+      <td><a href="{% url 'ticket' attempt.ticket %}">{{ attempt.ticket }}</a></td>
+      <td>{{ attempt.created_by }}</td>
+      <td>{{ attempt.created_at|date:"Y-m-d H:i" }}</td>
+      <td>{{ attempt.submitted_rows }}</td>
+      <td>{{ attempt.row_keys }}</td>
+      <td><a href="{% url 'ticket' attempt.ticket %}">回看本批</a></td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="6">还没有成功批次票</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>批量登记灯光</h1>
+<p>一次填写多座灯，提交后逐座判定；整批成功才签发批次票。任一灯号空白则整批不入库。</p>
+{% if error %}<p class="err">{{ error }}</p>{% endif %}
+<form method="post" id="batch-form">
+  {% csrf_token %}
+  <table>
+    <thead>
+      <tr><th>行号</th><th>灯号</th><th>实测光强（坎德拉）</th><th>要求光强</th><th>方位偏差（度）</th><th></th></tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <button type="button" id="add-row" class="secondary">加一座</button>
+  <button type="submit">整批提交</button>
+</form>
+
+<template id="row-template">
+  <tr class="batch-row">
+    <td class="line-no"></td>
+    <td><input name="aid_code" maxlength="40" /></td>
+    <td><input name="measured_cd" type="number" step="0.1" /></td>
+    <td><input name="required_cd" type="number" step="0.1" value="1200" /></td>
+    <td><input name="bearing_error_deg" type="number" step="0.1" value="0" /></td>
+    <td><button type="button" class="secondary del-row">删除</button></td>
+  </tr>
+</template>
+
+<script>
+(function () {
+  var tbody = document.getElementById("rows");
+  var tpl = document.getElementById("row-template");
+  function renumber() {
+    tbody.querySelectorAll(".batch-row").forEach(function (tr, i) {
+      tr.querySelector(".line-no").textContent = i + 1;
+    });
+  }
+  function addRow() {
+    tbody.appendChild(tpl.content.firstElementChild.cloneNode(true));
+    renumber();
+  }
+  document.getElementById("add-row").addEventListener("click", addRow);
+  tbody.addEventListener("click", function (e) {
+    if (e.target.classList.contains("del-row")) {
+      e.target.closest("tr").remove();
+      renumber();
+    }
+  });
+  addRow();
+  addRow();
+})();
+</script>
+{% endblock %}

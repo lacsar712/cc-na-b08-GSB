@@ -15,6 +15,7 @@
     label { display: block; margin: 10px 0 4px; }
     input { width: 100%; padding: 8px; box-sizing: border-box; }
     button { margin-top: 14px; background: #0f3d3e; color: #fff; border: 0; padding: 8px 16px; }
+    button.secondary { background: #5a726d; }
     .err { color: #9b1c1c; }
   </style>
 </head>
@@ -23,7 +24,12 @@
     <strong>航标灯光巡检台</strong>
     {% if user.is_authenticated %}
       <a href="{% url 'list' %}">巡检记录</a>
-      {% if can_write %}<a href="{% url 'create' %}">登记</a>{% endif %}
+      {% if can_write %}
+        <a href="{% url 'create' %}">单座登记</a>
+        <a href="{% url 'batch_create' %}">批量登记</a>
+        <a href="{% url 'failed_attempts' %}">失败尝试</a>
+      {% endif %}
+      <a href="{% url 'tickets' %}">批次票</a>
       <span style="margin-left:auto">{{ user.username }}</span>
       <a href="{% url 'logout' %}">退出</a>
     {% endif %}

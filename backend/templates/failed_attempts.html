@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>失败批次尝试</h1>
+<p>这些批次整批未入库，未产生实测行，也不签发批次票。</p>
+<table>
+  <thead><tr><th>时间</th><th>提交人</th><th>提交行数</th><th>问题行号</th><th>原因</th></tr></thead>
+  <tbody>
+  {% for attempt in attempts %}
+    <tr>
+      <td>{{ attempt.created_at|date:"Y-m-d H:i" }}</td>
+      <td>{{ attempt.created_by }}</td>
+      <td>{{ attempt.submitted_rows }}</td>
+      <td class="bad">第 {{ attempt.failed_row }} 行</td>
+      <td>{{ attempt.fail_reason }}</td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5">还没有失败尝试</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
